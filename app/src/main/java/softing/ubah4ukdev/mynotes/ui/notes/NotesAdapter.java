@@ -16,7 +16,7 @@ import java.util.List;
 
 import softing.ubah4ukdev.mynotes.R;
 import softing.ubah4ukdev.mynotes.model.Note;
-import softing.ubah4ukdev.mynotes.model.Notes;
+import softing.ubah4ukdev.mynotes.model.NotesRepository;
 
 /****
  Project MyNotes
@@ -32,8 +32,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     private List<Note> notes;
     private INotesClickable iNotesClickable;
 
-    NotesAdapter(Notes notesList, INotesClickable iNotesClickable) {
-        this.notes = notesList.getNotes();
+    NotesAdapter(NotesRepository notesRepositoryList, INotesClickable iNotesClickable) {
+        this.notes = notesRepositoryList.getNotes();
         this.iNotesClickable = iNotesClickable;
     }
 

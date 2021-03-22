@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Random;
 
 import softing.ubah4ukdev.mynotes.model.Note;
-import softing.ubah4ukdev.mynotes.model.Notes;
+import softing.ubah4ukdev.mynotes.model.NotesRepository;
 
 /****
  Project MyNotes
@@ -19,25 +19,25 @@ import softing.ubah4ukdev.mynotes.model.Notes;
  2021.03.20
  v1.0
  */
-public class DataHelper implements IDataHelper {
-    private static Notes myNotesExample;
+public class NoteService implements INoteService {
+    private static NotesRepository myNotesRepositoryExample;
 
-    public DataHelper() {
-        if (myNotesExample == null) {
-            myNotesExample = loadExample(50);
+    public NoteService() {
+        if (myNotesRepositoryExample == null) {
+            myNotesRepositoryExample = getNotesExample(50);
         }
     }
 
     @Override
-    public Notes load() {
+    public NotesRepository getNotes() {
         //TODO реализовать загрузку заметок откуда-либо
-        return myNotesExample;
+        return myNotesRepositoryExample;
     }
 
     @Override
-    public Notes loadExample(int count) {
+    public NotesRepository getNotesExample(int count) {
         //TODO реализовать генерацию заметок для тестов
-        Notes result = new Notes();
+        NotesRepository result = new NotesRepository();
         Random rnd = new Random();
         Calendar cal;
         List<String> colors = Arrays.asList("#f44336", "#e91e63", "#2196f3", "#66bb6a", "#6a1b9a",
@@ -79,8 +79,8 @@ public class DataHelper implements IDataHelper {
 
     //Пока изменение только даты
     @Override
-    public void saveDate(Note note, long dateNew) {
+    public void updateDateNote(Note note, long dateNew) {
         //TODO реализовать сохранение заметок куда-либо
-        myNotesExample.findByID(note.getId()).setDateCreated(dateNew);
+        myNotesRepositoryExample.findByID(note.getId()).setDateCreated(dateNew);
     }
 }

@@ -12,39 +12,24 @@ import java.util.List;
  2021.03.20
  v1.0
  */
-public class Notes {
+public class NotesRepository {
     private List<Note> notes;
 
-    public Notes() {
+    public NotesRepository() {
         notes = new ArrayList<>();
     }
 
     public boolean add(Note note) {
-        try {
-            note.setId(notes.size());
-            notes.add(note);
-            return true;
-        } catch (Exception err) {
-            return false;
-        }
+        note.setId(notes.size());
+        return notes.add(note);
     }
 
     public boolean remove(Note note) {
-        try {
-            notes.remove(note);
-            return true;
-        } catch (Exception err) {
-            return false;
-        }
+        return notes.remove(note);
     }
 
-    public boolean remove(int index) {
-        try {
-            notes.remove(index);
-            return true;
-        } catch (Exception err) {
-            return false;
-        }
+    public void remove(int index) {
+        notes.remove(index);
     }
 
     public List<Note> getNotes() {

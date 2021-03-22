@@ -3,21 +3,24 @@ package softing.ubah4ukdev.mynotes;
 import android.os.Bundle;
 import android.view.Menu;
 
-import com.google.android.material.navigation.NavigationView;
-
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
-import softing.ubah4ukdev.mynotes.servicess.DataHelper;
+import com.google.android.material.navigation.NavigationView;
 
-public class MainActivity extends AppCompatActivity {
+import softing.ubah4ukdev.mynotes.ui.notes.Publisher;
+import softing.ubah4ukdev.mynotes.ui.notes.PublisherGetter;
+
+public class MainActivity extends AppCompatActivity implements PublisherGetter {
 
     private AppBarConfiguration mAppBarConfiguration;
+    private Publisher publisher = new Publisher();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +39,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
-
-
     }
 
     @Override
@@ -53,5 +53,10 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    @Override
+    public Publisher getPublisher() {
+        return publisher;
     }
 }

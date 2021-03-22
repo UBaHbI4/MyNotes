@@ -1,5 +1,6 @@
 package softing.ubah4ukdev.mynotes.ui.notes;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,8 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import softing.ubah4ukdev.mynotes.R;
 import softing.ubah4ukdev.mynotes.model.Note;
-import softing.ubah4ukdev.mynotes.model.Notes;
-import softing.ubah4ukdev.mynotes.servicess.DataHelper;
+import softing.ubah4ukdev.mynotes.model.NotesRepository;
+import softing.ubah4ukdev.mynotes.servicess.NoteService;
 import softing.ubah4ukdev.mynotes.ui.detail.DetailFragment;
 
 /****
@@ -33,19 +34,30 @@ import softing.ubah4ukdev.mynotes.ui.detail.DetailFragment;
 
 public class NotesFragment extends Fragment implements INotesClickable, INoteObserver {
     private final String CURRENT_NOTE = "CURRENT_NOTE";
-    private Notes myNotes;
+    private NotesRepository myNotesRepository;
     private View root;
     private RecyclerView recyclerView;
     private boolean isLandscape;
     private Note currentNote;
     private NotesAdapter adapter;
+    private Publisher publisher;
 
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        publisher = ((PublisherGetter) context).getPublisher(); // получим обработчика подписок
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        publisher.unsubscribe(this);
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_notes, container, false);
-        Publisher.getInstance().add(this);
-        Init();
-        adapter.notifyDataSetChanged();
+
+        publisher.subscribe(this);
+        init();
         isLandscape = isLandscape();
         return root;
     }
@@ -60,7 +72,9 @@ public class NotesFragment extends Fragment implements INotesClickable, INoteObs
         if (savedInstanceState != null) {
             currentNote = (Note) savedInstanceState.getSerializable(CURRENT_NOTE);
         } else {
-            currentNote = myNotes.getNotes().get(0);
+            if (myNotesRepository != null) {
+                currentNote = myNotesRepository.getNotes().get(0);
+            }
         }
         if (isLandscape) {
             showNotesLand(currentNote);
@@ -69,17 +83,22 @@ public class NotesFragment extends Fragment implements INotesClickable, INoteObs
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putSerializable(CURRENT_NOTE, currentNote);
         super.onSaveInstanceState(outState);
+        if (currentNote != null) {
+            outState.putSerializable(CURRENT_NOTE, currentNote);
+        }
     }
 
-    private void Init() {
+    private void init() {
         if (root != null) {
             recyclerView = root.findViewById(R.id.recyclerViewNotes);
-            DataHelper data = new DataHelper();
-            myNotes = data.load();
-            currentNote = myNotes.getNotes().get(myNotes.getNotes().size() - 1);
-            adapter = new NotesAdapter(myNotes, this);
+            NoteService data = new NoteService();
+            myNotesRepository = data.getNotes();
+            if (myNotesRepository == null) {
+                return;
+            }
+            currentNote = myNotesRepository.getNotes().get(myNotesRepository.getNotes().size() - 1);
+            adapter = new NotesAdapter(myNotesRepository, this);
             recyclerView.setAdapter(adapter);
         }
     }
@@ -87,12 +106,12 @@ public class NotesFragment extends Fragment implements INotesClickable, INoteObs
     @Override
     public void onNoteClick(int position) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable(CURRENT_NOTE, myNotes.getNotes().get(position));
-        currentNote = myNotes.getNotes().get(position);
+        bundle.putSerializable(CURRENT_NOTE, myNotesRepository.getNotes().get(position));
+        currentNote = myNotesRepository.getNotes().get(position);
         if (isLandscape) {
-            showNotesLand(myNotes.getNotes().get(position));
+            showNotesLand(myNotesRepository.getNotes().get(position));
         } else {
-            showNotes(myNotes.getNotes().get(position));
+            showNotes(myNotesRepository.getNotes().get(position));
         }
     }
 
@@ -117,8 +136,9 @@ public class NotesFragment extends Fragment implements INotesClickable, INoteObs
 
     @Override
     public void update() {
-        DataHelper data = new DataHelper();
-        myNotes = data.load();
+        NoteService data = new NoteService();
+        myNotesRepository = data.getNotes();
         adapter.notifyDataSetChanged();
     }
+
 }

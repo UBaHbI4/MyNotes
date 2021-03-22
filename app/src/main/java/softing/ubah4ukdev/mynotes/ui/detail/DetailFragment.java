@@ -1,9 +1,9 @@
 package softing.ubah4ukdev.mynotes.ui.detail;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +13,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+
+import com.google.android.material.card.MaterialCardView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,10 +27,12 @@ import java.util.Date;
 
 import softing.ubah4ukdev.mynotes.R;
 import softing.ubah4ukdev.mynotes.model.Note;
-import softing.ubah4ukdev.mynotes.servicess.DataHelper;
+import softing.ubah4ukdev.mynotes.servicess.NoteService;
+import softing.ubah4ukdev.mynotes.ui.notes.INoteObserver;
 import softing.ubah4ukdev.mynotes.ui.notes.Publisher;
+import softing.ubah4ukdev.mynotes.ui.notes.PublisherGetter;
 
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment implements INoteObserver {
     private final String CURRENT_NOTE = "CURRENT_NOTE";
 
     private TextView titleView;
@@ -37,19 +40,34 @@ public class DetailFragment extends Fragment {
     private TextView dateCreatedView;
     private LinearLayoutCompat rect;
     private Note current;
+    private MaterialCardView detailCard;
+    private View root;
+    private Publisher publisher;
 
-    View root;
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        publisher = ((PublisherGetter) context).getPublisher(); // получим обработчика подписок
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        publisher.unsubscribe(this);
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_detail, container, false);
-        if (root != null) {
-            if (getArguments() != null) {
-                Note note = (Note) getArguments().getSerializable(CURRENT_NOTE);
+        publisher.subscribe(this);
+        if (getArguments() != null) {
+            Note note = (Note) getArguments().getSerializable(CURRENT_NOTE);
+            titleView = root.findViewById(R.id.titleTV);
+            noteView = root.findViewById(R.id.noteTV);
+            dateCreatedView = root.findViewById(R.id.dateCreatedTV);
+            rect = root.findViewById(R.id.rect);
+            detailCard = root.findViewById(R.id.detailCard);
+            if (note != null) {
+                detailCard.setVisibility(View.VISIBLE);
                 current = note;
-                titleView = root.findViewById(R.id.titleTV);
-                noteView = root.findViewById(R.id.noteTV);
-                dateCreatedView = root.findViewById(R.id.dateCreatedTV);
-                rect = root.findViewById(R.id.rect);
                 titleView.setText(note.getTitle());
                 noteView.setText(note.getNote());
                 dateCreatedView.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date(note.getDateCreated())));
@@ -58,6 +76,8 @@ public class DetailFragment extends Fragment {
                 dateCreatedView.setOnClickListener(v -> {
                     callDatePicker();
                 });
+            } else {
+                detailCard.setVisibility(View.GONE);
             }
         }
         return root;
@@ -71,18 +91,19 @@ public class DetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(CURRENT_NOTE, current);
+        if (current != null) {
+            outState.putSerializable(CURRENT_NOTE, current);
+        }
     }
+
 
     private boolean isLandscape() {
         return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-
+    public void onResume() {
+        super.onResume();
         if (isLandscape()) {
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
             navController.navigateUp();
@@ -112,12 +133,18 @@ public class DetailFragment extends Fragment {
                             e.printStackTrace();
                         }
 
-                        DataHelper data = new DataHelper();
-                        data.saveDate(current, milliseconds);
+                        NoteService data = new NoteService();
+                        data.updateDateNote(current, milliseconds);
                         dateCreatedView.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date(current.getDateCreated())));
-                        Publisher.getInstance().startUpdate();
+                        publisher.startUpdate();
                     }
                 }, myYear, myMonth, myDay);
         datePickerDialog.show();
+    }
+
+
+    @Override
+    public void update() {
+
     }
 }
