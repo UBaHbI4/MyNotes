@@ -1,14 +1,17 @@
 package softing.ubah4ukdev.mynotes.ui.notes;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -32,7 +35,7 @@ import softing.ubah4ukdev.mynotes.ui.detail.DetailFragment;
  v1.0
  */
 
-public class NotesFragment extends Fragment implements INotesClickable, INoteObserver {
+public class NotesFragment extends Fragment implements INotesClickable, INotesLongClickable, INoteObserver {
     private final String CURRENT_NOTE = "CURRENT_NOTE";
     private NotesRepository myNotesRepository;
     private View root;
@@ -45,6 +48,7 @@ public class NotesFragment extends Fragment implements INotesClickable, INoteObs
     public void onAttach(Context context) {
         super.onAttach(context);
         publisher = ((PublisherGetter) context).getPublisher(); // получим обработчика подписок
+        publisher.subscribe(this);
     }
 
     @Override
@@ -55,8 +59,6 @@ public class NotesFragment extends Fragment implements INotesClickable, INoteObs
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_notes, container, false);
-
-        publisher.subscribe(this);
         init();
         isLandscape = isLandscape();
         return root;
@@ -98,7 +100,7 @@ public class NotesFragment extends Fragment implements INotesClickable, INoteObs
                 return;
             }
             currentNote = myNotesRepository.getNotes().get(myNotesRepository.getNotes().size() - 1);
-            adapter = new NotesAdapter(myNotesRepository, this);
+            adapter = new NotesAdapter(myNotesRepository, this, this);
             recyclerView.setAdapter(adapter);
         }
     }
@@ -122,7 +124,7 @@ public class NotesFragment extends Fragment implements INotesClickable, INoteObs
         detailFragment.setArguments(bundle);
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.detail_land, detailFragment);  // замена фрагмента
+        fragmentTransaction.replace(R.id.detail_land, detailFragment);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         fragmentTransaction.commit();
     }
@@ -141,4 +143,29 @@ public class NotesFragment extends Fragment implements INotesClickable, INoteObs
         adapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onNoteLongClick(int position) {
+        String[] items = {"Изменить", "Удалить", "Подробнее.."};
+        String title = myNotesRepository.getNotes().get(position).getTitle();
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle(title);
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                switch (item) {
+                    case 0:
+                        Toast.makeText(getActivity(), "Редактируем заметку " + title, Toast.LENGTH_SHORT).show();
+                        break;
+                    case 1:
+                        Toast.makeText(getActivity(), "Удаляем заметку " + title, Toast.LENGTH_SHORT).show();
+                        break;
+                    case 2:
+                        Toast.makeText(getActivity(), "Просматриваем заметку " + title, Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
+        builder.show();
+    }
 }

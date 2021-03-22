@@ -23,6 +23,8 @@
     <dimen name="date_margin_left">5dp</dimen>
     <dimen name="date_margin_bottom">5dp</dimen>
     <dimen name="note_margin_main_card">5dp</dimen>
+    <dimen name="img_margin_right">10dp</dimen>
+    <dimen name="img_margin_left">30dp</dimen>
     <item name="count_column" format="integer" type="dimen">2</item>
     <item name="count_lines" format="integer" type="dimen">2</item>
 </resources>

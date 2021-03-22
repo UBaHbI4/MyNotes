@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import softing.ubah4ukdev.mynotes.R;
 import softing.ubah4ukdev.mynotes.model.Note;
@@ -49,15 +50,8 @@ public class DetailFragment extends Fragment implements INoteObserver {
         publisher = ((PublisherGetter) context).getPublisher(); // получим обработчика подписок
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        publisher.unsubscribe(this);
-    }
-
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_detail, container, false);
-        publisher.subscribe(this);
         if (getArguments() != null) {
             Note note = (Note) getArguments().getSerializable(CURRENT_NOTE);
             titleView = root.findViewById(R.id.titleTV);
@@ -74,7 +68,7 @@ public class DetailFragment extends Fragment implements INoteObserver {
                 rect.setBackgroundColor(Color.parseColor(note.getColor()));
 
                 dateCreatedView.setOnClickListener(v -> {
-                    callDatePicker();
+                    callDatePicker(note.getDateCreated());
                 });
             } else {
                 detailCard.setVisibility(View.GONE);
@@ -110,9 +104,11 @@ public class DetailFragment extends Fragment implements INoteObserver {
         }
     }
 
-    private void callDatePicker() {
+    private void callDatePicker(long currentDate) {
         // получаем текущую дату
-        final Calendar cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance();
+        cal.clear();
+        cal.setTimeInMillis(currentDate);
         int myYear = cal.get(Calendar.YEAR);
         int myMonth = cal.get(Calendar.MONTH);
         int myDay = cal.get(Calendar.DAY_OF_MONTH);
@@ -122,26 +118,19 @@ public class DetailFragment extends Fragment implements INoteObserver {
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        String editTextDateParam = dayOfMonth + "." + (monthOfYear + 1) + "." + year;
-                        SimpleDateFormat f = new SimpleDateFormat("dd.MM.yyyy");
-                        Date d = null;
-                        long milliseconds = 0;
-                        try {
-                            d = f.parse(editTextDateParam);
-                            milliseconds = d.getTime();
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.clear();
+                        calendar.set(Calendar.YEAR, year);
+                        calendar.set(Calendar.MONTH, (monthOfYear));
+                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                         NoteService data = new NoteService();
-                        data.updateDateNote(current, milliseconds);
+                        data.updateDateNote(current, calendar.getTimeInMillis());
                         dateCreatedView.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date(current.getDateCreated())));
                         publisher.startUpdate();
                     }
                 }, myYear, myMonth, myDay);
         datePickerDialog.show();
     }
-
 
     @Override
     public void update() {
