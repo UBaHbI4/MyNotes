@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_notes">
+    app:startDestination="@+id/nav__item_notes">
 
     <fragment
-        android:id="@+id/nav_notes"
+        android:id="@+id/nav__item_notes"
         android:name="softing.ubah4ukdev.mynotes.ui.notes.NotesFragment"
         android:label="@string/menu_main"
         tools:layout="@layout/fragment_notes" />
@@ -16,5 +16,17 @@
         android:name="softing.ubah4ukdev.mynotes.ui.detail.DetailFragment"
         android:label="@string/menu_detail"
         tools:layout="@layout/fragment_detail" />
+
+    <fragment
+        android:id="@+id/nav_item_about"
+        android:name="softing.ubah4ukdev.mynotes.ui.about.AboutFragment"
+        android:label="@string/menu_about"
+        tools:layout="@layout/fragment_about" />
+
+    <fragment
+        android:id="@+id/nav__item_settings"
+        android:name="softing.ubah4ukdev.mynotes.ui.settings.SettingsFragment"
+        android:label="@string/menu_setting"
+        tools:layout="@layout/fragment_settings" />
 
 </navigation>

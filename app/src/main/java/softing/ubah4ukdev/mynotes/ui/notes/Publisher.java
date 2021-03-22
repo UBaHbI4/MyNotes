@@ -2,6 +2,7 @@ package softing.ubah4ukdev.mynotes.ui.notes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observer;
 
 /****
  Project MyNotes
@@ -13,23 +14,21 @@ import java.util.List;
  v1.0
  */
 public class Publisher {
-    private static Publisher instance;
 
     private List<INoteObserver> observers;
 
-    private Publisher() {
+    public Publisher() {
         observers = new ArrayList<>();
     }
 
-    public void add(INoteObserver observer) {
+    // Подписать
+    public void subscribe(INoteObserver observer) {
         observers.add(observer);
     }
 
-    public static Publisher getInstance() {
-        if (instance == null) {
-            instance = new Publisher();
-        }
-        return instance;
+    // Отписать
+    public void unsubscribe(INoteObserver observer) {
+        observers.remove(observer);
     }
 
     public void startUpdate() {
