@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -51,6 +52,7 @@ public class DetailFragment extends Fragment implements INoteObserver {
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        DetailViewModel  detailViewModel = new ViewModelProvider(this).get(DetailViewModel.class);
         root = inflater.inflate(R.layout.fragment_detail, container, false);
         if (getArguments() != null) {
             Note note = (Note) getArguments().getSerializable(CURRENT_NOTE);
@@ -133,7 +135,7 @@ public class DetailFragment extends Fragment implements INoteObserver {
     }
 
     @Override
-    public void update() {
+    public void updateAllNotes() {
 
     }
 }

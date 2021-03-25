@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
@@ -58,6 +59,7 @@ public class NotesFragment extends Fragment implements INotesClickable, INotesLo
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        NotesViewModel notesViewModel = new ViewModelProvider(this).get(NotesViewModel.class);
         root = inflater.inflate(R.layout.fragment_notes, container, false);
         init();
         isLandscape = isLandscape();
@@ -137,7 +139,7 @@ public class NotesFragment extends Fragment implements INotesClickable, INotesLo
     }
 
     @Override
-    public void update() {
+    public void updateAllNotes() {
         NoteService data = new NoteService();
         myNotesRepository = data.getNotes();
         adapter.notifyDataSetChanged();

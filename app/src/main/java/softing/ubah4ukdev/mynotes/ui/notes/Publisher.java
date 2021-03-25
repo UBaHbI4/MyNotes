@@ -2,7 +2,6 @@ package softing.ubah4ukdev.mynotes.ui.notes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observer;
 
 /****
  Project MyNotes
@@ -33,7 +32,7 @@ public class Publisher {
 
     public void startUpdate() {
         for (INoteObserver observer: observers) {
-            observer.update();
+            observer.updateAllNotes();
         }
     }
 }
