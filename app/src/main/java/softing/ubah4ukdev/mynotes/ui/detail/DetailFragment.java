@@ -21,29 +21,25 @@ import androidx.navigation.Navigation;
 
 import com.google.android.material.card.MaterialCardView;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import softing.ubah4ukdev.mynotes.R;
 import softing.ubah4ukdev.mynotes.model.Note;
 import softing.ubah4ukdev.mynotes.servicess.NoteService;
-import softing.ubah4ukdev.mynotes.ui.notes.INoteObserver;
 import softing.ubah4ukdev.mynotes.ui.notes.Publisher;
 import softing.ubah4ukdev.mynotes.ui.notes.PublisherGetter;
 
-public class DetailFragment extends Fragment implements INoteObserver {
+public class DetailFragment extends Fragment {
     private final String CURRENT_NOTE = "CURRENT_NOTE";
-
+    public final NoteService noteService = NoteService.INSTANCE;
     private TextView titleView;
     private TextView noteView;
     private TextView dateCreatedView;
     private LinearLayoutCompat rect;
     private Note current;
     private MaterialCardView detailCard;
-    private View root;
     private Publisher publisher;
 
     public void onAttach(Context context) {
@@ -52,8 +48,8 @@ public class DetailFragment extends Fragment implements INoteObserver {
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        DetailViewModel  detailViewModel = new ViewModelProvider(this).get(DetailViewModel.class);
-        root = inflater.inflate(R.layout.fragment_detail, container, false);
+        DetailViewModel detailViewModel = new ViewModelProvider(this).get(DetailViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_detail, container, false);
         if (getArguments() != null) {
             Note note = (Note) getArguments().getSerializable(CURRENT_NOTE);
             titleView = root.findViewById(R.id.titleTV);
@@ -125,8 +121,7 @@ public class DetailFragment extends Fragment implements INoteObserver {
                         calendar.set(Calendar.YEAR, year);
                         calendar.set(Calendar.MONTH, (monthOfYear));
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        NoteService data = new NoteService();
-                        data.updateDateNote(current, calendar.getTimeInMillis());
+                        noteService.updateDateNote(current, calendar.getTimeInMillis());
                         dateCreatedView.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date(current.getDateCreated())));
                         publisher.startUpdate();
                     }
@@ -134,8 +129,5 @@ public class DetailFragment extends Fragment implements INoteObserver {
         datePickerDialog.show();
     }
 
-    @Override
-    public void updateAllNotes() {
 
-    }
 }

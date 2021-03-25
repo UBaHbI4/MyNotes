@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements PublisherGetter {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav__item_notes, R.id.nav_detail, R.id.nav_item_about, R.id.nav__item_settings)
+                R.id.nav__item_notes, R.id.nav_detail, R.id.nav_item_about, R.id.nav__item_settings, R.id.nav__item_edit)
                 .setOpenableLayout(drawer)
                 .build();
 

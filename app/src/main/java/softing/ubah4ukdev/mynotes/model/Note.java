@@ -25,6 +25,10 @@ public class Note implements Serializable {
         this.color = color;
     }
 
+    public Note() {
+
+    }
+
     public String getTitle() {
         return title;
     }
