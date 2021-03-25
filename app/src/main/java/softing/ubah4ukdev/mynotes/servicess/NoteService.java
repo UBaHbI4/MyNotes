@@ -9,6 +9,7 @@ import java.util.Random;
 
 import softing.ubah4ukdev.mynotes.model.Note;
 import softing.ubah4ukdev.mynotes.model.NotesRepository;
+import softing.ubah4ukdev.mynotes.utils.NotesLogger;
 
 /****
  Project MyNotes
@@ -23,6 +24,7 @@ public class NoteService implements INoteService {
     private static NotesRepository myNotesRepositoryExample;
 
     public NoteService() {
+        NotesLogger.printLog("public NoteService()");
         if (myNotesRepositoryExample == null) {
             myNotesRepositoryExample = getNotesExample(50);
         }
@@ -31,6 +33,15 @@ public class NoteService implements INoteService {
     @Override
     public NotesRepository getNotes() {
         //TODO реализовать загрузку заметок откуда-либо
+        NotesLogger.printLog("public NotesRepository getNotes()");
+        Collections.sort(myNotesRepositoryExample.getNotes(), new Comparator<Note>() {
+            @Override
+            public int compare(Note o1, Note o2) {
+                Long d1 = o1.getDateCreated();
+                Long d2 = o2.getDateCreated();
+                return d2.compareTo(d1);
+            }
+        });
         return myNotesRepositoryExample;
     }
 
@@ -65,14 +76,7 @@ public class NoteService implements INoteService {
             ));
         }
 
-        Collections.sort(result.getNotes(), new Comparator<Note>() {
-            @Override
-            public int compare(Note o1, Note o2) {
-                Long d1 = o1.getDateCreated();
-                Long d2 = o2.getDateCreated();
-                return d2.compareTo(d1);
-            }
-        });
+
 
         return result;
     }

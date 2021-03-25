@@ -11,5 +11,5 @@ package softing.ubah4ukdev.mynotes.ui.notes;
  */
 
 public interface INoteObserver {
-    void update();
+    void updateAllNotes();
 }
