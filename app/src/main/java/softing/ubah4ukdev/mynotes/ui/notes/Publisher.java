@@ -31,7 +31,7 @@ public class Publisher {
     }
 
     public void startUpdate() {
-        for (INoteObserver observer: observers) {
+        for (INoteObserver observer : observers) {
             observer.updateAllNotes();
         }
     }

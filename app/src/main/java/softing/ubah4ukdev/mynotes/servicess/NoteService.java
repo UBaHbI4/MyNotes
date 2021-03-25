@@ -21,12 +21,14 @@ import softing.ubah4ukdev.mynotes.utils.NotesLogger;
  v1.0
  */
 public class NoteService implements INoteService {
-    private static NotesRepository myNotesRepositoryExample;
+    public static final NoteService INSTANCE = new NoteService();
+
+    private NotesRepository notes;
 
     public NoteService() {
         NotesLogger.printLog("public NoteService()");
-        if (myNotesRepositoryExample == null) {
-            myNotesRepositoryExample = getNotesExample(50);
+        if (notes == null) {
+            notes = getNotesExample(50);
         }
     }
 
@@ -34,7 +36,7 @@ public class NoteService implements INoteService {
     public NotesRepository getNotes() {
         //TODO реализовать загрузку заметок откуда-либо
         NotesLogger.printLog("public NotesRepository getNotes()");
-        Collections.sort(myNotesRepositoryExample.getNotes(), new Comparator<Note>() {
+        Collections.sort(notes.getNotes(), new Comparator<Note>() {
             @Override
             public int compare(Note o1, Note o2) {
                 Long d1 = o1.getDateCreated();
@@ -42,7 +44,7 @@ public class NoteService implements INoteService {
                 return d2.compareTo(d1);
             }
         });
-        return myNotesRepositoryExample;
+        return notes;
     }
 
     @Override
@@ -54,7 +56,7 @@ public class NoteService implements INoteService {
         List<String> colors = Arrays.asList("#f44336", "#e91e63", "#2196f3", "#66bb6a", "#6a1b9a",
                 "#3f51b5", "#9fa8da", "#cddc39", "#ffeb3b", "#76ff03", "#6d4c41");
         List<String> noteExamples = Arrays.asList(
-                "Предварительные выводы неутешительны: современная методология разработки позволяет оценить значение поставленных обществом задач. Прежде всего, современная методология разработки представляет собой интересный эксперимент проверки форм воздействия. Лишь стремящиеся вытеснить традиционное производство, нанотехнологии неоднозначны и будут разоблачены.",
+                "Предварительные выводы неутешительны: современная методология разработки позволяет оценить значение поставленных обществом задач. Прежде всего, современная методология разработки представляет собой интересный эксперимент проверки форм воздействия. Лишь стремящиеся вытеснить традиционное производство, нанотехнологии неоднозначны и будут разоблачены.Предварительные выводы неутешительны: современная методология разработки позволяет оценить значение поставленных обществом задач. Прежде всего, современная методология разработки представляет собой интересный эксперимент проверки форм воздействия. Лишь стремящиеся вытеснить традиционное производство, нанотехнологии неоднозначны и будут разоблачены.",
                 "Имеется спорная точка зрения, гласящая примерно следующее: активно развивающиеся страны третьего мира являются только методом политического участия и описаны максимально подробно. Предварительные выводы неутешительны: глубокий уровень погружения обеспечивает актуальность экспериментов, поражающих по своей масштабности и грандиозности. Являясь всего лишь частью общей картины, явные признаки победы институционализации лишь добавляют фракционных разногласий и объективно рассмотрены соответствующими инстанциями.",
                 "Имеется спорная точка зрения, гласящая примерно следующее: предприниматели в сети интернет лишь добавляют фракционных разногласий и подвергнуты целой серии независимых исследований. С учётом сложившейся международной обстановки, консультация с широким активом требует определения и уточнения форм воздействия. Лишь предприниматели в сети интернет представляют собой не что иное, как квинтэссенцию победы маркетинга над разумом и должны быть заблокированы в рамках своих собственных рациональных ограничений!",
                 "Учитывая ключевые сценарии поведения, базовый вектор развития является качественно новой ступенью кластеризации усилий. Мы вынуждены отталкиваться от того, что постоянное информационно-пропагандистское обеспечение нашей деятельности не оставляет шанса для экономической целесообразности принимаемых решений. В рамках спецификации современных стандартов, диаграммы связей, инициированные исключительно синтетически, преданы социально-демократической анафеме.",
@@ -75,9 +77,6 @@ public class NoteService implements INoteService {
                     colors.get(rnd.nextInt(9))
             ));
         }
-
-
-
         return result;
     }
 
@@ -85,6 +84,18 @@ public class NoteService implements INoteService {
     @Override
     public void updateDateNote(Note note, long dateNew) {
         //TODO реализовать сохранение заметок куда-либо
-        myNotesRepositoryExample.findByID(note.getId()).setDateCreated(dateNew);
+        notes.findByID(note.getId()).setDateCreated(dateNew);
+    }
+
+    @Override
+    public void updateNote(int itemID, Note note) {
+        notes.findByID(itemID).setTitle(note.getTitle());
+        notes.findByID(itemID).setNote(note.getNote());
+        notes.findByID(itemID).setDateCreated(note.getDateCreated());
+    }
+
+    @Override
+    public void deleteNote(Note note) {
+        notes.remove(note);
     }
 }

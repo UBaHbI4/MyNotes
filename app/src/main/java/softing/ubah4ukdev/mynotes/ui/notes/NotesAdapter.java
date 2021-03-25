@@ -11,6 +11,7 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,15 +30,23 @@ import softing.ubah4ukdev.mynotes.model.NotesRepository;
  */
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
-    private List<Note> notes;
+    private List<Note> notes = new ArrayList<>();
     private INotesClickable iNotesClickable;
     private INotesLongClickable iNotesLongClickable;
 
-    NotesAdapter(NotesRepository notesRepositoryList, INotesClickable iNotesClickable, INotesLongClickable iNotesLongClickable) {
-        this.notes = notesRepositoryList.getNotes();
+    NotesAdapter(INotesClickable iNotesClickable, INotesLongClickable iNotesLongClickable) {
+
         this.iNotesClickable = iNotesClickable;
         this.iNotesLongClickable = iNotesLongClickable;
 
+    }
+
+    public void addItems(NotesRepository notesRepositoryList) {
+        notes.addAll(notesRepositoryList.getNotes());
+    }
+
+    public void clear() {
+        notes.clear();
     }
 
     @NonNull

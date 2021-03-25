@@ -40,6 +40,11 @@ public class NotesRepository {
         this.notes = notes;
     }
 
+    public Note get(int index) {
+        return notes.get(index);
+    }
+
+
     public Note findByID(int id) {
         for (Note note : notes) {
             if (note.getId() == id) {

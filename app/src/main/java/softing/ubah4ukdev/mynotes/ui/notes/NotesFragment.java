@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -38,13 +38,14 @@ import softing.ubah4ukdev.mynotes.ui.detail.DetailFragment;
 
 public class NotesFragment extends Fragment implements INotesClickable, INotesLongClickable, INoteObserver {
     private final String CURRENT_NOTE = "CURRENT_NOTE";
-    private NotesRepository myNotesRepository;
-    private View root;
     private RecyclerView recyclerView;
     private boolean isLandscape;
     private Note currentNote;
     private NotesAdapter adapter;
     private Publisher publisher;
+    private NotesViewModel notesViewModel;
+    private NavController navController;
+    public final NoteService noteService = NoteService.INSTANCE;
 
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -58,11 +59,30 @@ public class NotesFragment extends Fragment implements INotesClickable, INotesLo
         publisher.unsubscribe(this);
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        adapter = new NotesAdapter(this, this);
+        notesViewModel = new ViewModelProvider(this).get(NotesViewModel.class);
+        notesViewModel.fetchNotes();
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        NotesViewModel notesViewModel = new ViewModelProvider(this).get(NotesViewModel.class);
-        root = inflater.inflate(R.layout.fragment_notes, container, false);
-        init();
+        View root = inflater.inflate(R.layout.fragment_notes, container, false);
+        recyclerView = root.findViewById(R.id.recyclerViewNotes);
+        recyclerView.setAdapter(adapter);
+        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         isLandscape = isLandscape();
+
+        notesViewModel.getNotesLiveData()
+                .observe(getViewLifecycleOwner(), new Observer<NotesRepository>() {
+                    @Override
+                    public void onChanged(NotesRepository notes) {
+                        adapter.clear();
+                        adapter.addItems(notes);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
         return root;
     }
 
@@ -76,9 +96,7 @@ public class NotesFragment extends Fragment implements INotesClickable, INotesLo
         if (savedInstanceState != null) {
             currentNote = (Note) savedInstanceState.getSerializable(CURRENT_NOTE);
         } else {
-            if (myNotesRepository != null) {
-                currentNote = myNotesRepository.getNotes().get(0);
-            }
+            currentNote = notesViewModel.noteService.getNotes().get(0);
         }
         if (isLandscape) {
             showNotesLand(currentNote);
@@ -93,29 +111,17 @@ public class NotesFragment extends Fragment implements INotesClickable, INotesLo
         }
     }
 
-    private void init() {
-        if (root != null) {
-            recyclerView = root.findViewById(R.id.recyclerViewNotes);
-            NoteService data = new NoteService();
-            myNotesRepository = data.getNotes();
-            if (myNotesRepository == null) {
-                return;
-            }
-            currentNote = myNotesRepository.getNotes().get(myNotesRepository.getNotes().size() - 1);
-            adapter = new NotesAdapter(myNotesRepository, this, this);
-            recyclerView.setAdapter(adapter);
-        }
-    }
 
     @Override
     public void onNoteClick(int position) {
+        currentNote = notesViewModel.noteService.getNotes().get(position);
         Bundle bundle = new Bundle();
-        bundle.putSerializable(CURRENT_NOTE, myNotesRepository.getNotes().get(position));
-        currentNote = myNotesRepository.getNotes().get(position);
+        bundle.putSerializable(CURRENT_NOTE, currentNote);
+
         if (isLandscape) {
-            showNotesLand(myNotesRepository.getNotes().get(position));
+            showNotesLand(currentNote);
         } else {
-            showNotes(myNotesRepository.getNotes().get(position));
+            showNotes(currentNote);
         }
     }
 
@@ -127,29 +133,31 @@ public class NotesFragment extends Fragment implements INotesClickable, INotesLo
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.detail_land, detailFragment);
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.commit();
     }
 
     private void showNotes(Note current) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(CURRENT_NOTE, current);
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         navController.navigate(R.id.nav_detail, bundle);
     }
 
+
     @Override
     public void updateAllNotes() {
-        NoteService data = new NoteService();
-        myNotesRepository = data.getNotes();
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
+        notesViewModel.fetchNotes();
     }
 
     @Override
     public void onNoteLongClick(int position) {
         String[] items = {"Изменить", "Удалить", "Подробнее.."};
-        String title = myNotesRepository.getNotes().get(position).getTitle();
+        String title = notesViewModel.noteService.getNotes().get(position).getTitle();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        currentNote = notesViewModel.noteService.getNotes().get(position);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(CURRENT_NOTE, currentNote);
 
         builder.setTitle(title);
         builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -157,13 +165,18 @@ public class NotesFragment extends Fragment implements INotesClickable, INotesLo
             public void onClick(DialogInterface dialog, int item) {
                 switch (item) {
                     case 0:
-                        Toast.makeText(getActivity(), "Редактируем заметку " + title, Toast.LENGTH_SHORT).show();
+                        navController.navigate(R.id.nav__item_edit, bundle);
                         break;
                     case 1:
-                        Toast.makeText(getActivity(), "Удаляем заметку " + title, Toast.LENGTH_SHORT).show();
+                        noteService.deleteNote(currentNote);
+                        notesViewModel.fetchNotes();
                         break;
                     case 2:
-                        Toast.makeText(getActivity(), "Просматриваем заметку " + title, Toast.LENGTH_SHORT).show();
+                        if (isLandscape) {
+                            showNotesLand(currentNote);
+                        } else {
+                            showNotes(currentNote);
+                        }
                         break;
                 }
             }

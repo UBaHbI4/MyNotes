@@ -14,4 +14,9 @@
     <string name="menu_setting">Настройки</string>
     <string name="menu_about">О программе</string>
     <string name="nav_header_user_mail">username@gmail.com</string>
+    <string name="menu_edit">Редактирование</string>
+    <string name="title_hint">Название заметки</string>
+    <string name="note_hint">Текст заметки</string>
+    <string name="date_hint">Дата создания</string>
+    <string name="btn_save_text">SAVE</string>
 </resources>
