@@ -1,6 +1,5 @@
 package softing.ubah4ukdev.mynotes.ui.notes;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 import softing.ubah4ukdev.mynotes.R;
-import softing.ubah4ukdev.mynotes.model.Note;
-import softing.ubah4ukdev.mynotes.model.NotesRepository;
+import softing.ubah4ukdev.mynotes.domain.Note;
 
 /****
  Project MyNotes
@@ -35,18 +33,20 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     private INotesLongClickable iNotesLongClickable;
 
     NotesAdapter(INotesClickable iNotesClickable, INotesLongClickable iNotesLongClickable) {
-
         this.iNotesClickable = iNotesClickable;
         this.iNotesLongClickable = iNotesLongClickable;
-
     }
 
-    public void addItems(NotesRepository notesRepositoryList) {
-        notes.addAll(notesRepositoryList.getNotes());
+    public void addItems(List<Note> notesRepositoryList) {
+        notes.addAll(notesRepositoryList);
     }
 
     public void clear() {
         notes.clear();
+    }
+
+    public List<Note> getData() {
+        return notes;
     }
 
     @NonNull
@@ -63,8 +63,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         holder.note.setText(note.getNote());
         holder.dateCreated.setText(new SimpleDateFormat("dd.MM.yyyy")
                 .format(new Date(note.getDateCreated())));
-
-        holder.rect.setBackgroundColor(Color.parseColor(note.getColor()));
+        holder.rect.setBackgroundColor(note.getColor());
     }
 
     @Override

@@ -1,4 +1,4 @@
-package softing.ubah4ukdev.mynotes.model;
+package softing.ubah4ukdev.mynotes.domain;
 
 import java.io.Serializable;
 
@@ -16,17 +16,13 @@ public class Note implements Serializable {
     private String title;
     private String note;
     private long dateCreated;
-    private String color;
+    private int color;
 
-    public Note(String title, String note, long dateCreated, String color) {
+    public Note(String title, String note, long dateCreated, int color) {
         this.title = title;
         this.note = note;
         this.dateCreated = dateCreated;
         this.color = color;
-    }
-
-    public Note() {
-
     }
 
     public String getTitle() {
@@ -53,16 +49,12 @@ public class Note implements Serializable {
         this.dateCreated = dateCreated;
     }
 
-    public String getColor() {
+    public int getColor() {
         return color;
     }
 
-    public void setColor(String color) {
+    public void setColor(int color) {
         this.color = color;
-    }
-
-    public boolean compare(Note otherNote) {
-        return Math.abs(this.getDateCreated() - otherNote.getDateCreated()) < 0.0001f;
     }
 
     public int getId() {

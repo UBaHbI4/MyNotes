@@ -56,8 +56,8 @@
                 android:backgroundTint="@color/white"
                 android:gravity="top"
                 android:hint="@string/note_hint"
-                android:maxLines="@dimen/count_lines_note"
-                android:minLines="@dimen/count_lines_note" />
+                android:maxLines="@dimen/count_lines_note_land"
+                android:minLines="@dimen/count_lines_note_land" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout

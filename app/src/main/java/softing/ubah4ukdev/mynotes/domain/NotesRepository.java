@@ -1,5 +1,8 @@
-package softing.ubah4ukdev.mynotes.servicess;
+package softing.ubah4ukdev.mynotes.domain;
 
+import android.graphics.Color;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -7,8 +10,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-import softing.ubah4ukdev.mynotes.model.Note;
-import softing.ubah4ukdev.mynotes.model.NotesRepository;
 import softing.ubah4ukdev.mynotes.utils.NotesLogger;
 
 /****
@@ -20,23 +21,22 @@ import softing.ubah4ukdev.mynotes.utils.NotesLogger;
  2021.03.20
  v1.0
  */
-public class NoteService implements INoteService {
-    public static final NoteService INSTANCE = new NoteService();
+public class NotesRepository implements INotesRepository {
+    public static final NotesRepository INSTANCE = new NotesRepository();
 
-    private NotesRepository notes;
+    private List<Note> notes;
 
-    public NoteService() {
+    public NotesRepository() {
         NotesLogger.printLog("public NoteService()");
         if (notes == null) {
-            notes = getNotesExample(50);
+            notes = getNotesExample(25);
         }
     }
 
     @Override
-    public NotesRepository getNotes() {
+    public List<Note> getNotes() {
         //TODO реализовать загрузку заметок откуда-либо
-        NotesLogger.printLog("public NotesRepository getNotes()");
-        Collections.sort(notes.getNotes(), new Comparator<Note>() {
+        Collections.sort(notes, new Comparator<Note>() {
             @Override
             public int compare(Note o1, Note o2) {
                 Long d1 = o1.getDateCreated();
@@ -48,13 +48,21 @@ public class NoteService implements INoteService {
     }
 
     @Override
-    public NotesRepository getNotesExample(int count) {
+    public Note getNote(int index) {
+        if (notes != null && notes.size() > index) {
+            return notes.get(index);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public List<Note> getNotesExample(int count) {
         //TODO реализовать генерацию заметок для тестов
-        NotesRepository result = new NotesRepository();
+        List<Note> result = new ArrayList<>();
         Random rnd = new Random();
         Calendar cal;
-        List<String> colors = Arrays.asList("#f44336", "#e91e63", "#2196f3", "#66bb6a", "#6a1b9a",
-                "#3f51b5", "#9fa8da", "#cddc39", "#ffeb3b", "#76ff03", "#6d4c41");
+        List<Integer> colors = Arrays.asList(Color.RED, Color.GREEN, Color.BLACK, Color.BLUE, Color.GRAY, Color.YELLOW);
         List<String> noteExamples = Arrays.asList(
                 "Предварительные выводы неутешительны: современная методология разработки позволяет оценить значение поставленных обществом задач. Прежде всего, современная методология разработки представляет собой интересный эксперимент проверки форм воздействия. Лишь стремящиеся вытеснить традиционное производство, нанотехнологии неоднозначны и будут разоблачены.Предварительные выводы неутешительны: современная методология разработки позволяет оценить значение поставленных обществом задач. Прежде всего, современная методология разработки представляет собой интересный эксперимент проверки форм воздействия. Лишь стремящиеся вытеснить традиционное производство, нанотехнологии неоднозначны и будут разоблачены.",
                 "Имеется спорная точка зрения, гласящая примерно следующее: активно развивающиеся страны третьего мира являются только методом политического участия и описаны максимально подробно. Предварительные выводы неутешительны: глубокий уровень погружения обеспечивает актуальность экспериментов, поражающих по своей масштабности и грандиозности. Являясь всего лишь частью общей картины, явные признаки победы институционализации лишь добавляют фракционных разногласий и объективно рассмотрены соответствующими инстанциями.",
@@ -74,28 +82,24 @@ public class NoteService implements INoteService {
                     "Заметка №" + i,
                     noteExamples.get(rnd.nextInt(10)),
                     cal.getTimeInMillis(),
-                    colors.get(rnd.nextInt(9))
+                    colors.get(rnd.nextInt(5))
             ));
         }
         return result;
     }
 
-    //Пока изменение только даты
     @Override
-    public void updateDateNote(Note note, long dateNew) {
-        //TODO реализовать сохранение заметок куда-либо
-        notes.findByID(note.getId()).setDateCreated(dateNew);
-    }
-
-    @Override
-    public void updateNote(int itemID, Note note) {
-        notes.findByID(itemID).setTitle(note.getTitle());
-        notes.findByID(itemID).setNote(note.getNote());
-        notes.findByID(itemID).setDateCreated(note.getDateCreated());
+    public void updateNote(Note oldNote, Note note) {
+        notes.set(notes.indexOf(oldNote), note);
     }
 
     @Override
     public void deleteNote(Note note) {
         notes.remove(note);
+    }
+
+    @Override
+    public void addNote(Note note) {
+        notes.add(note);
     }
 }

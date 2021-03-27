@@ -19,4 +19,10 @@
     <string name="note_hint">Текст заметки</string>
     <string name="date_hint">Дата создания</string>
     <string name="btn_save_text">SAVE</string>
+    <string name="color_title">Цвет заметки</string>
+    <string name="submit">Добавить заметку</string>
+    <string name="menu_to_notes">к заметкам</string>
+    <string name="menu_setting_title">Настройки</string>
+    <string name="menu_about_title">о приложениии</string>
+    <string name="menu_edit_title">к заметкам</string>
 </resources>
