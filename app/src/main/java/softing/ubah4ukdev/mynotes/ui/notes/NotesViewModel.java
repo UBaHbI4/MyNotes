@@ -14,23 +14,25 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import softing.ubah4ukdev.mynotes.model.NotesRepository;
-import softing.ubah4ukdev.mynotes.servicess.NoteService;
+import java.util.List;
+
+import softing.ubah4ukdev.mynotes.domain.Note;
+import softing.ubah4ukdev.mynotes.domain.NotesRepository;
 
 public class NotesViewModel extends ViewModel {
 
-    public final NoteService noteService = NoteService.INSTANCE;
+    public final NotesRepository notesRepository = NotesRepository.INSTANCE;
 
-    private final MutableLiveData<NotesRepository> notesLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Note>> notesLiveData = new MutableLiveData<>();
 
     public NotesViewModel() {
     }
 
     public void fetchNotes() {
-        notesLiveData.setValue(noteService.getNotes());
+        notesLiveData.setValue(notesRepository.getNotes());
     }
 
-    public LiveData<NotesRepository> getNotesLiveData() {
+    public LiveData<List<Note>> getNotesLiveData() {
         return notesLiveData;
     }
 }

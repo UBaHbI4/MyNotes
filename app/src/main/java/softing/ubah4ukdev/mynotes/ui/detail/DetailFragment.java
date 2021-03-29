@@ -1,19 +1,18 @@
 package softing.ubah4ukdev.mynotes.ui.detail;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -22,18 +21,17 @@ import androidx.navigation.Navigation;
 import com.google.android.material.card.MaterialCardView;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import softing.ubah4ukdev.mynotes.R;
-import softing.ubah4ukdev.mynotes.model.Note;
-import softing.ubah4ukdev.mynotes.servicess.NoteService;
+import softing.ubah4ukdev.mynotes.domain.Note;
+import softing.ubah4ukdev.mynotes.domain.NotesRepository;
 import softing.ubah4ukdev.mynotes.ui.notes.Publisher;
 import softing.ubah4ukdev.mynotes.ui.notes.PublisherGetter;
 
 public class DetailFragment extends Fragment {
     private final String CURRENT_NOTE = "CURRENT_NOTE";
-    public final NoteService noteService = NoteService.INSTANCE;
+    public final NotesRepository notesRepository = NotesRepository.INSTANCE;
     private TextView titleView;
     private TextView noteView;
     private TextView dateCreatedView;
@@ -41,6 +39,7 @@ public class DetailFragment extends Fragment {
     private Note current;
     private MaterialCardView detailCard;
     private Publisher publisher;
+    private NavController navController;
 
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -50,6 +49,10 @@ public class DetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         DetailViewModel detailViewModel = new ViewModelProvider(this).get(DetailViewModel.class);
         View root = inflater.inflate(R.layout.fragment_detail, container, false);
+        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+
+        init(root);
+
         if (getArguments() != null) {
             Note note = (Note) getArguments().getSerializable(CURRENT_NOTE);
             titleView = root.findViewById(R.id.titleTV);
@@ -63,16 +66,32 @@ public class DetailFragment extends Fragment {
                 titleView.setText(note.getTitle());
                 noteView.setText(note.getNote());
                 dateCreatedView.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date(note.getDateCreated())));
-                rect.setBackgroundColor(Color.parseColor(note.getColor()));
-
-                dateCreatedView.setOnClickListener(v -> {
-                    callDatePicker(note.getDateCreated());
-                });
+                rect.setBackgroundColor(note.getColor());
             } else {
                 detailCard.setVisibility(View.GONE);
             }
         }
         return root;
+    }
+
+    private void init(View view) {
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        //В альбомном режиме нету тулбара у детайлфрагмент
+        if (toolbar != null) {
+            ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+            if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
+            }
+
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    navController.navigate(R.id.nav__item_notes);
+                }
+            });
+        }
     }
 
     @Override
@@ -88,7 +107,6 @@ public class DetailFragment extends Fragment {
         }
     }
 
-
     private boolean isLandscape() {
         return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
@@ -101,33 +119,4 @@ public class DetailFragment extends Fragment {
             navController.navigateUp();
         }
     }
-
-    private void callDatePicker(long currentDate) {
-        // получаем текущую дату
-        Calendar cal = Calendar.getInstance();
-        cal.clear();
-        cal.setTimeInMillis(currentDate);
-        int myYear = cal.get(Calendar.YEAR);
-        int myMonth = cal.get(Calendar.MONTH);
-        int myDay = cal.get(Calendar.DAY_OF_MONTH);
-
-        // инициализируем диалог выбора даты текущими значениями
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.clear();
-                        calendar.set(Calendar.YEAR, year);
-                        calendar.set(Calendar.MONTH, (monthOfYear));
-                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        noteService.updateDateNote(current, calendar.getTimeInMillis());
-                        dateCreatedView.setText(new SimpleDateFormat("dd.MM.yyyy").format(new Date(current.getDateCreated())));
-                        publisher.startUpdate();
-                    }
-                }, myYear, myMonth, myDay);
-        datePickerDialog.show();
-    }
-
-
 }
