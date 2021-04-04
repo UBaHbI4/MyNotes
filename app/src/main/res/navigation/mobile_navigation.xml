@@ -35,4 +35,10 @@
         android:label="@string/menu_edit"
         tools:layout="@layout/fragment_edit_note" />
 
+    <fragment
+        android:id="@+id/nav__item_profile"
+        android:name="softing.ubah4ukdev.mynotes.ui.profile.ProfileFragment"
+        android:label="@string/menu_profile"
+        tools:layout="@layout/fragment_profile" />
+
 </navigation>

@@ -16,20 +16,27 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
+import softing.ubah4ukdev.mynotes.domain.Callback;
+import softing.ubah4ukdev.mynotes.domain.INotesRepository;
 import softing.ubah4ukdev.mynotes.domain.Note;
-import softing.ubah4ukdev.mynotes.domain.NotesRepository;
 
 public class NotesViewModel extends ViewModel {
 
-    public final NotesRepository notesRepository = NotesRepository.INSTANCE;
-
     private final MutableLiveData<List<Note>> notesLiveData = new MutableLiveData<>();
 
-    public NotesViewModel() {
+    public final INotesRepository repository;
+
+    public NotesViewModel(INotesRepository repository) {
+        this.repository = repository;
     }
 
     public void fetchNotes() {
-        notesLiveData.setValue(notesRepository.getNotes());
+        repository.getNotes(new Callback<List<Note>>() {
+            @Override
+            public void onResult(List<Note> value) {
+                notesLiveData.setValue(value);
+            }
+        });
     }
 
     public LiveData<List<Note>> getNotesLiveData() {

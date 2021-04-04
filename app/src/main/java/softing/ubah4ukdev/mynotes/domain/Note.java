@@ -12,7 +12,7 @@ import java.io.Serializable;
  v1.0
  */
 public class Note implements Serializable {
-    private int id;
+    private String id;
     private String title;
     private String note;
     private long dateCreated;
@@ -57,11 +57,11 @@ public class Note implements Serializable {
         this.color = color;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 }

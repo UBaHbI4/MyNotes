@@ -1,4 +1,4 @@
-package softing.ubah4ukdev.mynotes.ui.notes;
+package softing.ubah4ukdev.mynotes.ui.notes.adapter;
 
 import androidx.recyclerview.widget.DiffUtil;
 
@@ -39,7 +39,7 @@ public class NoteDiffUtilCallback extends DiffUtil.Callback {
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
         Note oldNote = oldList.get(oldItemPosition);
         Note newNote = newList.get(newItemPosition);
-        return oldNote.getId() == newNote.getId();
+        return oldNote.getId().equals(newNote.getId());
     }
 
     @Override

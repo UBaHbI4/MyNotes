@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -26,8 +25,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 import softing.ubah4ukdev.mynotes.R;
+import softing.ubah4ukdev.mynotes.domain.Callback;
+import softing.ubah4ukdev.mynotes.domain.FirestoreNotesRepository;
 import softing.ubah4ukdev.mynotes.domain.Note;
-import softing.ubah4ukdev.mynotes.domain.NotesRepository;
 import softing.ubah4ukdev.mynotes.ui.notes.INoteObserver;
 import softing.ubah4ukdev.mynotes.ui.notes.Publisher;
 import softing.ubah4ukdev.mynotes.ui.notes.PublisherGetter;
@@ -36,7 +36,8 @@ import top.defaults.colorpicker.ColorPickerPopup;
 public class EditNoteFragment extends Fragment implements INoteObserver {
     private TextInputEditText dateInput;
     private final String CURRENT_NOTE = "CURRENT_NOTE";
-    public final NotesRepository notesRepository = NotesRepository.INSTANCE;
+    //public final MockNotesRepository mockNotesRepository = MockNotesRepository.INSTANCE;
+    public final FirestoreNotesRepository firestoreNotesRepository = FirestoreNotesRepository.INSTANCE;
     private TextInputEditText titleInput;
     private TextInputEditText noteInput;
     private NavController navController;
@@ -76,7 +77,7 @@ public class EditNoteFragment extends Fragment implements INoteObserver {
             btnSave.setOnClickListener(v -> {
                 String titleSave = titleInput.getText().toString();
                 String noteSave = noteInput.getText().toString();
-                Integer color = ((ColorDrawable) colorSelector.getBackground()).getColor();
+                int color = ((ColorDrawable) colorSelector.getBackground()).getColor();
                 long dateSave = 0;
                 Date date = null;
                 try {
@@ -87,13 +88,22 @@ public class EditNoteFragment extends Fragment implements INoteObserver {
                 }
                 Note saveNote = new Note(titleSave, noteSave, dateSave, color);
                 if (note != null) {
-                    notesRepository.updateNote(note, saveNote);
-                    publisher.startUpdate();
+                    firestoreNotesRepository.updateNote(note, saveNote, new Callback<Boolean>() {
+                        @Override
+                        public void onResult(Boolean value) {
+                            publisher.startUpdate();
+                            navController.navigateUp();
+                        }
+                    });
                 } else {
-                    notesRepository.addNote(saveNote);
-                    publisher.startUpdate();
+                    firestoreNotesRepository.addNote(saveNote, new Callback<Boolean>() {
+                        @Override
+                        public void onResult(Boolean value) {
+                            publisher.startUpdate();
+                            navController.navigateUp();
+                        }
+                    });
                 }
-                navController.navigateUp();
             });
         }
         return root;
@@ -108,9 +118,9 @@ public class EditNoteFragment extends Fragment implements INoteObserver {
         dateInput = view.findViewById(R.id.dateInput);
         colorSelector.setOnClickListener(v -> {
             new ColorPickerPopup.Builder(getContext())
-                    .initialColor(Color.RED) // Set initial color
-                    .enableBrightness(false) // Enable brightness slider or not
-                    .enableAlpha(false) // Enable alpha slider or not
+                    .initialColor(Color.RED)
+                    .enableBrightness(false)
+                    .enableAlpha(false)
                     .okTitle("OK")
                     .cancelTitle("CANCEL")
                     .showIndicator(true)
@@ -129,24 +139,13 @@ public class EditNoteFragment extends Fragment implements INoteObserver {
         });
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-            if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
-                ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().onBackPressed();
             }
-
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    navController.navigateUp();
-                }
-            });
-        }
-
+        });
     }
-
 
     private void callDatePicker() {
         // получаем текущую дату
@@ -165,9 +164,7 @@ public class EditNoteFragment extends Fragment implements INoteObserver {
                         calendar.set(Calendar.YEAR, year);
                         calendar.set(Calendar.MONTH, (monthOfYear));
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
                         dateInput.setText(new SimpleDateFormat("dd.MM.yyyy").format(calendar.getTimeInMillis()));
-
                     }
                 }, myYear, myMonth, myDay);
         datePickerDialog.show();
@@ -175,6 +172,5 @@ public class EditNoteFragment extends Fragment implements INoteObserver {
 
     @Override
     public void updateAllNotes() {
-
     }
 }

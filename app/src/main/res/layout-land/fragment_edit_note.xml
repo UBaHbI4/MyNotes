@@ -14,6 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            app:navigationIcon="@drawable/ic_back_arrow"
             app:popupTheme="@style/Theme.MyNotes.PopupOverlay"
             app:title="@string/menu_edit_title" />
 
@@ -90,10 +91,10 @@
             android:id="@+id/colorTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginStart="@dimen/color_rect_margin_start"
+            android:layout_marginTop="@dimen/color_rect_margin_top_land"
             android:text="@string/color_title"
-            android:textSize="16sp"
+            android:textSize="@dimen/text_date_size"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dateInputLayout" />
 
@@ -101,8 +102,8 @@
             android:id="@+id/colorSelector"
             android:layout_width="@dimen/rect_size"
             android:layout_height="@dimen/rect_size"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="11dp"
+            android:layout_marginStart="@dimen/color_rect_margin_start"
+            android:layout_marginTop="@dimen/color_rect_margin_top"
             android:background="@color/orange"
             app:layout_constraintStart_toEndOf="@id/colorTitle"
             app:layout_constraintTop_toBottomOf="@id/dateInputLayout" />

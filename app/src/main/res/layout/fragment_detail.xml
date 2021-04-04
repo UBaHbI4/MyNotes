@@ -14,6 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            app:navigationIcon="@drawable/ic_back_arrow"
             app:popupTheme="@style/Theme.MyNotes.PopupOverlay"
             app:title="@string/menu_to_notes" />
 
