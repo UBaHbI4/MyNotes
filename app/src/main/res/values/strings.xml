@@ -32,5 +32,12 @@
     в Geek University.</string>
     <string name="action_find">Поиск</string>
     <string name="action_sort">Сорт</string>
+    <string name="ok">OK</string>
+    <string name="cancel">ОТМЕНА</string>
+    <string name="app_name_rus">Мои заметки</string>
+    <string name="title_alert_delete">Удаление заметки</string>
+    <string name="menu_edit_title_bottom">Редактирование</string>
+    <string name="edit_mode_title">Edit note</string>
+    <string name="add_mode_title">Create note</string>
     <integer name="com_vk_sdk_AppId">7813010</integer>
 </resources>

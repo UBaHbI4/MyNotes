@@ -38,6 +38,7 @@ import softing.ubah4ukdev.mynotes.domain.Callback;
 import softing.ubah4ukdev.mynotes.domain.FirestoreNotesRepository;
 import softing.ubah4ukdev.mynotes.domain.Note;
 import softing.ubah4ukdev.mynotes.ui.detail.DetailFragment;
+import softing.ubah4ukdev.mynotes.ui.edit.EditNoteFragmentBottomSheet;
 import softing.ubah4ukdev.mynotes.ui.notes.adapter.INotesClickable;
 import softing.ubah4ukdev.mynotes.ui.notes.adapter.INotesLongClickable;
 import softing.ubah4ukdev.mynotes.ui.notes.adapter.NoteDiffUtilCallback;
@@ -98,7 +99,12 @@ public class NotesFragment extends Fragment implements INotesClickable, INotesLo
             currentNote = null;
             Bundle bundle = new Bundle();
             bundle.putSerializable(CURRENT_NOTE, currentNote);
-            navController.navigate(R.id.nav__item_edit, bundle);
+            //navController.navigate(R.id.nav__item_edit, bundle);
+
+            //Вариант создания заметки через BottomSheetFragment
+            EditNoteFragmentBottomSheet editNoteFragmentBottomSheet = EditNoteFragmentBottomSheet.newInstance();
+            editNoteFragmentBottomSheet.setArguments(bundle);
+            editNoteFragmentBottomSheet.show(getActivity().getSupportFragmentManager(), EditNoteFragmentBottomSheet.TAG);
         });
 
         textInfo = view.findViewById(R.id.text_info);
@@ -141,7 +147,6 @@ public class NotesFragment extends Fragment implements INotesClickable, INotesLo
             return super.onOptionsItemSelected(item);
         });
     }
-
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_notes, container, false);
@@ -269,15 +274,14 @@ public class NotesFragment extends Fragment implements INotesClickable, INotesLo
                     public void onClick(DialogInterface dialog, int item) {
                         switch (item) {
                             case 0:
-                                navController.navigate(R.id.nav__item_edit, bundle);
+                                //Вариант редактирования заметки через BottomSheetFragment
+                                EditNoteFragmentBottomSheet editNoteFragmentBottomSheet = EditNoteFragmentBottomSheet.newInstance();
+                                editNoteFragmentBottomSheet.setArguments(bundle);
+                                editNoteFragmentBottomSheet.show(getActivity().getSupportFragmentManager(), EditNoteFragmentBottomSheet.TAG);
+                                //navController.navigate(R.id.nav__item_edit, bundle);
                                 break;
                             case 1:
-                                mockNotesRepository.deleteNote(currentNote, new Callback<Boolean>() {
-                                    @Override
-                                    public void onResult(Boolean value) {
-                                        notesViewModel.fetchNotes();
-                                    }
-                                });
+                                deleteAlert(currentNote);
                                 break;
                             case 2:
                                 if (isLandscape) {
@@ -312,6 +316,33 @@ public class NotesFragment extends Fragment implements INotesClickable, INotesLo
             menu.findItem(R.id.action_find).setVisible(false);
             menu.findItem(R.id.action_sort).setVisible(false);
         }
+    }
+
+    private void deleteAlert(Note note) {
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setTitle(R.string.title_alert_delete)
+                .setMessage("Действительно хотите удалить заметку '" + note.getTitle() + "'?")
+                .setIcon(R.drawable.ic_warning)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mockNotesRepository.deleteNote(note, new Callback<Boolean>() {
+                            @Override
+                            public void onResult(Boolean value) {
+                                notesViewModel.fetchNotes();
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Toast.makeText(getActivity(), R.string.cancel, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setCancelable(false)
+                .create();
+        dialog.show();
     }
 
 }
