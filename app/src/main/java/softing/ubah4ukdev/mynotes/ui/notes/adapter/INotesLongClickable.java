@@ -1,4 +1,4 @@
-package softing.ubah4ukdev.mynotes.ui.notes;
+package softing.ubah4ukdev.mynotes.ui.notes.adapter;
 
 /****
  Project MyNotes

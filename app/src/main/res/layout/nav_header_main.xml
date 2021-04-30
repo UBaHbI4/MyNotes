@@ -17,13 +17,12 @@
         android:layout_width="@dimen/img_size"
         android:layout_height="@dimen/img_size"
         android:layout_marginStart="@dimen/img_margin_left"
-        android:layout_marginRight="@dimen/img_margin_right"
+        android:layout_marginEnd="@dimen/img_margin_right"
         android:layout_marginBottom="@dimen/img_margin_bottom"
         android:contentDescription="@string/nav_header_desc"
         app:layout_constraintBottom_toTopOf="@id/user_name"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_header_avatar"
-        app:tint="@android:color/primary_text_dark" />
+        app:srcCompat="@drawable/ic_header_avatar" />
 
     <TextView
         android:id="@+id/user_name"
@@ -56,6 +55,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_launcher_app" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

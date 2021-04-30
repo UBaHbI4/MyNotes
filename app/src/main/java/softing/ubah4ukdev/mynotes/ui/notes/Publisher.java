@@ -1,5 +1,7 @@
 package softing.ubah4ukdev.mynotes.ui.notes;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,4 +37,5 @@ public class Publisher {
             observer.updateAllNotes();
         }
     }
+
 }

@@ -1,22 +1,20 @@
 package softing.ubah4ukdev.mynotes;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 
 import softing.ubah4ukdev.mynotes.ui.notes.Publisher;
 import softing.ubah4ukdev.mynotes.ui.notes.PublisherGetter;
+import softing.ubah4ukdev.mynotes.ui.profile.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity implements PublisherGetter {
 
@@ -34,5 +32,15 @@ public class MainActivity extends AppCompatActivity implements PublisherGetter {
     @Override
     public Publisher getPublisher() {
         return publisher;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Fragment navHostFragment = getSupportFragmentManager().getPrimaryNavigationFragment();
+        Fragment currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
+        if (currentFragment instanceof ProfileFragment) {
+            currentFragment.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

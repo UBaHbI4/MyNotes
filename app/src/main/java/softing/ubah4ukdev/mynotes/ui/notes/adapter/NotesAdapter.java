@@ -1,4 +1,4 @@
-package softing.ubah4ukdev.mynotes.ui.notes;
+package softing.ubah4ukdev.mynotes.ui.notes.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +32,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     private INotesClickable iNotesClickable;
     private INotesLongClickable iNotesLongClickable;
 
-    NotesAdapter(INotesClickable iNotesClickable, INotesLongClickable iNotesLongClickable) {
+    public NotesAdapter(INotesClickable iNotesClickable, INotesLongClickable iNotesLongClickable) {
         this.iNotesClickable = iNotesClickable;
         this.iNotesLongClickable = iNotesLongClickable;
     }

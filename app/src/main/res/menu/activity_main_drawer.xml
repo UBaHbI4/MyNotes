@@ -8,6 +8,10 @@
             android:id="@+id/nav__item_notes"
             android:icon="@drawable/ic_menu_list"
             android:title="@string/menu_main" />
+        <item
+            android:id="@+id/nav__item_profile"
+            android:icon="@drawable/ic_header_avatar"
+            android:title="@string/menu_profile" />
 
         <item
             android:id="@+id/nav__item_settings"
